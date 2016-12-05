@@ -40,7 +40,7 @@ public class LaunchActivity extends Activity {
 
             SessionManager manager=new SessionManager(getApplicationContext());
             String user=manager.getPreference(SESSION);
-            if(user.isEmpty()){
+            if(user.equals("")){
                 nexActivity=new Intent(getApplicationContext(),Login.class);
             }
             else{

@@ -8,7 +8,7 @@ import android.content.SharedPreferences;
  */
 
 public class SessionManager {
-    SharedPreferences settings;
+    static SharedPreferences settings;
     Context context;
     private static final String SESSION="session_file";
 
@@ -17,14 +17,14 @@ public class SessionManager {
         settings = context.getSharedPreferences(SESSION,0);
     }
 
-    public void setPreferencer(String key, String value){
+    public static void setPreferencer(String value){
         SharedPreferences.Editor editor = settings.edit();
-        editor.putString(key,value);
+        editor.putString("login",value);
         editor.commit();
     }
 
     public String getPreference(String key){
-        return settings.getString(key,"none");
+        return settings.getString(key,"");
     }
 
 
