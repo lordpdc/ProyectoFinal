@@ -17,6 +17,18 @@
         </activity>
         <activity android:name=".Login" />
         <activity android:name=".Initial_Screen"></activity>
-    </application>
 
+        <meta-data
+            android:name="com.google.android.gms.9.0.8"
+            android:value="@integer/google_play_services_version"/>
+
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyA313XNjZaLjugFEkL41MbS_r6ED7ZqwYw"/>
+
+        <uses-feature
+            android:glEsVersion="0x00020000"
+            android:required="true"/>
+
+    </application>
 </manifest>
