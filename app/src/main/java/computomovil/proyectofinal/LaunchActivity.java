@@ -1,13 +1,9 @@
 package computomovil.proyectofinal;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.AsyncTask;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.widget.Toast;
 
 public class LaunchActivity extends Activity {
     Intent nexActivity;
@@ -44,7 +40,7 @@ public class LaunchActivity extends Activity {
                 nexActivity=new Intent(getApplicationContext(),Login.class);
             }
             else{
-                nexActivity=new Intent(getApplicationContext(),Initial_Screen.class);
+                nexActivity=new Intent(getApplicationContext(),InitialScreen.class);
             }
             try {
                 Thread.sleep(1000);
