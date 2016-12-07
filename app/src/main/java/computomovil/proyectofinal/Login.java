@@ -32,6 +32,10 @@ public class Login extends AppCompatActivity {
     public void validate(View view) {
         user = userText.getText().toString();
         pass = passText.getText().toString();
+        if(user.isEmpty()||pass.isEmpty()){
+            Toast.makeText(getApplicationContext(),"Rellene su usario y contraseña ",Toast.LENGTH_LONG).show();
+            return;
+        }
         userReference = reference.child("users").child(user);
         userReference.addValueEventListener(new ValueEventListener() {
             @Override

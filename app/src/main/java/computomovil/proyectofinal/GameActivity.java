@@ -14,16 +14,30 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.model.Circle;
 import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
+
+import java.util.List;
+import java.util.Random;
+
+import static computomovil.proyectofinal.DefaultValues.*;
 
 
 public class GameActivity extends AppCompatActivity implements OnMapReadyCallback,SensorEventListener{
 
+    private boolean isDiceAvailable;
+    private float prevX = 0;
+    private float prevY = 0;
+    private float prevZ = 0;
+    private float curX = 0;
+    private float curY = 0;
+    private float curZ = 0;
     private GoogleMap map;
     private SensorManager sensorManager;
-    private Sensor gyroscope;
+    private Sensor acceler;
+    private long currentTime=0;
+    private boolean lastUpdate=AVAILABLE;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,18 +46,27 @@ public class GameActivity extends AppCompatActivity implements OnMapReadyCallbac
         MapFragment mapFragment = (MapFragment)getFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
         sensorManager = (SensorManager)getSystemService(SENSOR_SERVICE);
-        gyroscope = sensorManager .getDefaultSensor(Sensor.TYPE_GYROSCOPE);
+        acceler = sensorManager .getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+isDiceAvailable=AVAILABLE;
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        sensorManager.registerListener(this,gyroscope,SensorManager.SENSOR_DELAY_NORMAL);
+        List<Sensor> sensors = sensorManager.getSensorList(Sensor.TYPE_ACCELEROMETER);
+        if (sensors.size() > 0) {
+            sensorManager.registerListener(this, sensors.get(0), SensorManager.SENSOR_DELAY_GAME);
+        }
     }
 
     protected void onPause() {
         super .onPause();
-        sensorManager .unregisterListener(this);
+        sensorManager.unregisterListener(this);
+    }
+    @Override
+    protected void onStop() {
+        sensorManager.unregisterListener(this);
+        super.onStop();
     }
 
     @Override
@@ -58,19 +81,28 @@ public class GameActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         circles[0]= new CircleOptions()
                 .center(new LatLng(21.047866, -89.644431))
-                .radius(4)
+                .radius(2)
                 .strokeColor(Color.CYAN)
                 .fillColor(Color.CYAN);
         circles[1] = new CircleOptions()
                 .center(new LatLng(21.047892, -89.644479))
-                .radius(4)
+                .radius(2)
+                .strokeColor(Color.CYAN)
+                .fillColor(Color.CYAN);
+        circles[3] = new CircleOptions()
+                .center(new LatLng(21.047912, -89.644499))
+                .radius(2)
+                .strokeColor(Color.CYAN)
+                .fillColor(Color.CYAN);
+        circles[4] = new CircleOptions()
+                .center(new LatLng(21.047842, -89.644419))
+                .radius(2)
                 .strokeColor(Color.CYAN)
                 .fillColor(Color.CYAN);
 
-        //Circle circle = map.addCircle(circles[0]);
-        //Circle circle2 = map.addCircle(circles[1]);
-        map.addCircle(circles[0]);
-        map.addCircle(circles[1]);
+        for(CircleOptions circle:circles){
+            map.addCircle(circle);
+        }
 
     }
 
@@ -79,13 +111,48 @@ public class GameActivity extends AppCompatActivity implements OnMapReadyCallbac
         super.onStart();
     }
 
+    public void changeDice(){
+        if(isDiceAvailable!=AVAILABLE){
+            isDiceAvailable=DISABLE;
+        }
+        else{
+            isDiceAvailable=AVAILABLE;
+        }
+    }
+
     @Override
-    public void onSensorChanged(SensorEvent event) {
-        float []values = event.values ;
-        float x = values[ 0 ];
-        float y = values[ 1 ];
-        float z = values[ 2 ];
-        Toast.makeText(this,""+x+""+y+""+z,Toast.LENGTH_SHORT).show();
+    public void onSensorChanged(SensorEvent sensorEvent) {
+
+        if(isDiceAvailable!=AVAILABLE){
+            curX = sensorEvent.values[0];
+            curY = sensorEvent.values[1];
+            curZ = sensorEvent.values[2];
+            if(lastUpdate==AVAILABLE) {
+                prevX = Math.abs(curX);
+                prevY = Math.abs(curY);
+                prevZ = Math.abs(curZ);
+                lastUpdate=DISABLE;
+            }
+
+        else if(lastUpdate==DISABLE){
+                int difX = Math.round(prevX - curX);
+                int difY = Math.round(prevY - curY);
+                int difZ = Math.round(prevZ - curZ);
+                if (difX > MIN_MOV || difY > MIN_MOV || difZ > MIN_MOV) {
+                    getRandomNumber();
+                    lastUpdate=AVAILABLE;
+                }
+            }
+        }
+
+    }
+
+    private void getRandomNumber(){
+        Random r = new Random();
+        int diceValue = r.nextInt(MAX_DICE - MIN_DICE ) + MIN_DICE;
+        Toast.makeText(getApplicationContext(),"Obtuviste un "+Math.round(diceValue),Toast.LENGTH_LONG).show();
+
+
     }
 
     @Override

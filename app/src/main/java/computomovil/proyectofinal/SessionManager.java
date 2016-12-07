@@ -27,5 +27,10 @@ public class SessionManager {
         return settings.getString(key,"");
     }
 
+    public void cleanPreference(){
+        settings.edit().clear().commit();
+
+    }
+
 
 }
