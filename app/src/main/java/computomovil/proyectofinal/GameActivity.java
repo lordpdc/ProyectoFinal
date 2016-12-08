@@ -7,7 +7,9 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.Gravity;
 import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdate;
@@ -27,6 +29,7 @@ import static computomovil.proyectofinal.DefaultValues.*;
 public class GameActivity extends AppCompatActivity implements OnMapReadyCallback,SensorEventListener{
 
     private boolean isDiceAvailable;
+    private TextView positionLabel;
     private float prevX = 0;
     private float prevY = 0;
     private float prevZ = 0;
@@ -42,23 +45,19 @@ public class GameActivity extends AppCompatActivity implements OnMapReadyCallbac
             new CircleOptions()
                     .center(new LatLng(21.047866, -89.644431))
                     .radius(2)
-                    .strokeColor(Color.CYAN)
-                    .fillColor(Color.CYAN),
+                    ,
             new CircleOptions()
                     .center(new LatLng(21.047892, -89.644479))
                     .radius(2)
-                    .strokeColor(Color.CYAN)
-                    .fillColor(Color.CYAN),
+                    ,
             new CircleOptions()
                     .center(new LatLng(21.047912, -89.644499))
                     .radius(2)
-                    .strokeColor(Color.CYAN)
-                    .fillColor(Color.CYAN),
+                    ,
             new CircleOptions()
                     .center(new LatLng(21.047842, -89.644419))
                     .radius(2)
-                    .strokeColor(Color.CYAN)
-                    .fillColor(Color.CYAN)
+
     };
 
 
@@ -66,6 +65,7 @@ public class GameActivity extends AppCompatActivity implements OnMapReadyCallbac
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game);
+        positionLabel=(TextView)findViewById(R.id.positionLabel);
         MapFragment mapFragment = (MapFragment)getFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
         sensorManager = (SensorManager)getSystemService(SENSOR_SERVICE);
@@ -111,12 +111,19 @@ isDiceAvailable=AVAILABLE;
             map.addCircle(circle);
         }
     }
+    int currentPosition=0;
     private int currentCircle=0;
     public void changeMap(View view){
         repaintCircles();
-        circles[currentCircle].strokeColor(Color.YELLOW);
+        circles[currentCircle%circles.length].strokeColor(Color.YELLOW);
         updateMap();
         currentCircle++;
+    }
+    private void setNextPosition(int position){
+        currentPosition=position%circles.length;
+        repaintCircles();
+        circles[currentPosition].strokeColor(Color.YELLOW);
+        updateMap();
     }
     private void repaintCircles(){
         for(CircleOptions circle:circles){
@@ -131,13 +138,12 @@ isDiceAvailable=AVAILABLE;
         super.onStart();
     }
 
-    public void changeDice(){
-        if(isDiceAvailable!=AVAILABLE){
-            isDiceAvailable=DISABLE;
-        }
-        else{
-            isDiceAvailable=AVAILABLE;
-        }
+    public void setNextTarjet(View view){
+        int diceValue=getRandomNumber();
+        shotNotification("obtuviste: "+diceValue,CUSTOM_TOAST_TIME);
+        int nextPosition=currentPosition+diceValue;
+        setNextPosition(nextPosition);
+        positionLabel.setText("Position: "+nextPosition);
     }
 
     @Override
@@ -167,16 +173,22 @@ isDiceAvailable=AVAILABLE;
 
     }
 
-    private void getRandomNumber(){
+    @Override
+    public void onAccuracyChanged(Sensor sensor, int i) {
+
+    }
+
+    private int getRandomNumber(){
         Random r = new Random();
         int diceValue = r.nextInt(MAX_DICE - MIN_DICE ) + MIN_DICE;
-        Toast.makeText(getApplicationContext(),"Obtuviste un "+Math.round(diceValue),Toast.LENGTH_LONG).show();
+        return Math.round(diceValue);
 
 
     }
-
-    @Override
-    public void onAccuracyChanged(Sensor sensor, int accuracy) {
+    private void shotNotification(String msg,int durationTime){
+        Toast notification = new Toast(getApplicationContext());
+        notification.makeText(getApplicationContext(),msg,Toast.LENGTH_LONG).show();
 
     }
+
 }

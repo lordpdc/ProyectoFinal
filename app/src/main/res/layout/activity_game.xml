@@ -17,7 +17,7 @@
         android:id="@+id/map"/>
 
     <Button
-        android:text="hab/dis dados"
+        android:text="tirar dados"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/button2"
@@ -26,6 +26,18 @@
         android:layout_alignParentEnd="true"
         android:layout_marginRight="28dp"
         android:layout_marginEnd="28dp"
-        android:onClick="changeMap"/>
+        android:onClick="setNextTarjet"/>
+
+    <TextView
+        android:text="posicion: 0"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@+id/button2"
+        android:layout_toLeftOf="@+id/button2"
+        android:layout_toStartOf="@+id/button2"
+        android:layout_marginRight="29dp"
+        android:layout_marginEnd="29dp"
+        android:layout_marginTop="15dp"
+        android:id="@+id/positionLabel" />
 
 </RelativeLayout>
