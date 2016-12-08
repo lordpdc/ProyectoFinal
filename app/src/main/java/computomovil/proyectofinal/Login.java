@@ -45,6 +45,7 @@ public class Login extends AppCompatActivity {
                     SessionManager.setPreferencer(user);
                     Intent intent = new Intent(getApplicationContext(),InitialScreen.class);
                     startActivity(intent);
+                    finish();
                 }else{
                     Toast.makeText(getApplicationContext(),"Conbinancion Incorrecta",Toast.LENGTH_SHORT).show();
                 }
