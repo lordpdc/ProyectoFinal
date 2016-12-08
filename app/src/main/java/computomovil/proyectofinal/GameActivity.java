@@ -7,6 +7,7 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdate;
@@ -37,6 +38,28 @@ public class GameActivity extends AppCompatActivity implements OnMapReadyCallbac
     private Sensor acceler;
     private long currentTime=0;
     private boolean lastUpdate=AVAILABLE;
+    private CircleOptions[] circles = new CircleOptions[]{
+            new CircleOptions()
+                    .center(new LatLng(21.047866, -89.644431))
+                    .radius(2)
+                    .strokeColor(Color.CYAN)
+                    .fillColor(Color.CYAN),
+            new CircleOptions()
+                    .center(new LatLng(21.047892, -89.644479))
+                    .radius(2)
+                    .strokeColor(Color.CYAN)
+                    .fillColor(Color.CYAN),
+            new CircleOptions()
+                    .center(new LatLng(21.047912, -89.644499))
+                    .radius(2)
+                    .strokeColor(Color.CYAN)
+                    .fillColor(Color.CYAN),
+            new CircleOptions()
+                    .center(new LatLng(21.047842, -89.644419))
+                    .radius(2)
+                    .strokeColor(Color.CYAN)
+                    .fillColor(Color.CYAN)
+    };
 
 
     @Override
@@ -76,35 +99,32 @@ isDiceAvailable=AVAILABLE;
         map.getUiSettings().setZoomControlsEnabled(true);
         CameraUpdate camUpd = CameraUpdateFactory.newLatLngZoom(new LatLng(21.048192, -89.644379), 20);
         map.moveCamera(camUpd);
+        updateMap();
 
-        CircleOptions[] circles = new CircleOptions[4];
 
-        circles[0]= new CircleOptions()
-                .center(new LatLng(21.047866, -89.644431))
-                .radius(2)
-                .strokeColor(Color.CYAN)
-                .fillColor(Color.CYAN);
-        circles[1] = new CircleOptions()
-                .center(new LatLng(21.047892, -89.644479))
-                .radius(2)
-                .strokeColor(Color.CYAN)
-                .fillColor(Color.CYAN);
-        circles[3] = new CircleOptions()
-                .center(new LatLng(21.047912, -89.644499))
-                .radius(2)
-                .strokeColor(Color.CYAN)
-                .fillColor(Color.CYAN);
-        circles[4] = new CircleOptions()
-                .center(new LatLng(21.047842, -89.644419))
-                .radius(2)
-                .strokeColor(Color.CYAN)
-                .fillColor(Color.CYAN);
 
+
+    }
+    private void updateMap(){
+        map.clear();
         for(CircleOptions circle:circles){
             map.addCircle(circle);
         }
-
     }
+    private int currentCircle=0;
+    public void changeMap(View view){
+        repaintCircles();
+        circles[currentCircle].strokeColor(Color.YELLOW);
+        updateMap();
+        currentCircle++;
+    }
+    private void repaintCircles(){
+        for(CircleOptions circle:circles){
+            circle.fillColor(Color.TRANSPARENT);
+            circle.strokeColor(Color.BLUE);
+        }
+    }
+
 
     @Override
     protected void onStart() {
