@@ -19,4 +19,13 @@
         android:layout_centerHorizontal="true"
         android:onClick="launchMap"/>
 
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Mapas"
+        android:id="@+id/botonDescargar"
+        android:layout_centerHorizontal="true"
+        android:onClick="downloadMaps"
+        android:layout_below="@+id/botonJuegos" />
+
 </RelativeLayout>
