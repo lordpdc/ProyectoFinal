@@ -117,6 +117,7 @@ public class GameActivity extends AppCompatActivity implements OnMapReadyCallbac
         repaintCircles();
         circles[currentPosition].strokeColor(Color.YELLOW);
         updateMap();
+         positionLabel.setText("posicion: "+currentPosition);
     }
 
     private void repaintCircles() {
@@ -185,12 +186,26 @@ public class GameActivity extends AppCompatActivity implements OnMapReadyCallbac
         if(availabre){
             mSensorManager.registerListener(this, mAccelerometer,
                     SensorManager.SENSOR_DELAY_NORMAL);
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setTitle("Agitalo!!!!");
+            builder.setMessage("Agita tu celular para tirar los dados y ver la siguiente ubicacion. ")
+                    .setCancelable(false)
+                    .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+
+                        }
+                    });
+            AlertDialog alertDialog = builder.create();
+            alertDialog.show();
+            availabre=!availabre;
         }
-        else{
+        /*else{
             mSensorManager.unregisterListener(this);
-        }
-        availabre=!availabre;
+            availabre=!availabre;
+        }*/
     }
+
     public void showDiceValue(final int value){
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Agitaste tu cel!!");
