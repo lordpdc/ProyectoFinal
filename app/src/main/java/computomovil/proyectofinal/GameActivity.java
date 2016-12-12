@@ -118,6 +118,7 @@ public class GameActivity extends AppCompatActivity implements OnMapReadyCallbac
         circles[currentPosition].strokeColor(Color.YELLOW);
         updateMap();
          positionLabel.setText("posicion: "+currentPosition);
+
     }
 
     private void repaintCircles() {
