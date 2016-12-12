@@ -26,7 +26,9 @@ import java.util.Random;
 
 import static computomovil.proyectofinal.DefaultValues.*;
 
-public class GameActivity extends AppCompatActivity implements OnMapReadyCallback{
+public class GameActivity extends AppCompatActivity implements OnMapReadyCallback, SensorEventListener {
+    private  SensorManager mSensorManager;
+    private  Sensor mAccelerometer;
 
     private TextView positionLabel;
     private GoogleMap map;
@@ -58,20 +60,27 @@ public class GameActivity extends AppCompatActivity implements OnMapReadyCallbac
         MapFragment mapFragment = (MapFragment) getFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
         diceValue=0;
+        mSensorManager = (SensorManager)getSystemService(SENSOR_SERVICE);
+        mAccelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+
     }
 
     @Override
     protected void onResume() {
         super.onResume();
+        mSensorManager.unregisterListener(this);
+
 
     }
 
     protected void onPause() {
+        mSensorManager.unregisterListener(this);
         super.onPause();
     }
 
     @Override
     protected void onStop() {
+        mSensorManager.unregisterListener(this);
         super.onStop();
     }
 
@@ -103,14 +112,7 @@ public class GameActivity extends AppCompatActivity implements OnMapReadyCallbac
     int currentPosition = 0;
     private int currentCircle = 0;
 
-    public void changeMap(View view) {
-        repaintCircles();
-        circles[currentCircle % circles.length].strokeColor(Color.YELLOW);
-        updateMap();
-        currentCircle++;
-    }
-
-    private void setNextPosition(int position) {
+     private void setNextPosition(int position) {
         currentPosition = position % circles.length;
         repaintCircles();
         circles[currentPosition].strokeColor(Color.YELLOW);
@@ -127,12 +129,10 @@ public class GameActivity extends AppCompatActivity implements OnMapReadyCallbac
     @Override
     protected void onStart() {
         super.onStart();
+        mSensorManager.unregisterListener(this);
+
     }
 
-    public void setNextTarjet(View view) {
-        //setNextPosition(nextPosition);
-        positionLabel.setText("Position: " );
-    }
 
     /******************************
      * Shake Section
@@ -140,8 +140,7 @@ public class GameActivity extends AppCompatActivity implements OnMapReadyCallbac
      *
      ************************/
     private int diceValue;
-    private SensorManager mSensorManager;
-    private ShakeEventListener mSensorListener;
+
 
 
     private int getRandomNumber() {
@@ -149,24 +148,49 @@ public class GameActivity extends AppCompatActivity implements OnMapReadyCallbac
         int diceValue = r.nextInt(MAX_DICE - MIN_DICE) + MIN_DICE;
         return Math.round(diceValue);
     }
-    public void getDice(View view){
-        System.out.println("entro a getDice");
-        mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
-        mSensorListener = new ShakeEventListener();
+    private float lastx = 0;
+    private float lasty = 0;
+    private float lastz = 0;
+    private boolean sensorControl=true;
+    private int SHAKE_LVL=3;
 
-        mSensorListener.setOnShakeListener(new ShakeEventListener.OnShakeListener() {
-            public void onShake() {
-                System.out.println("entro a onShake");
-
-                mSensorManager.unregisterListener(mSensorListener);
+    @Override
+    public void onSensorChanged(SensorEvent sensorEvent) {
+        float x = sensorEvent.values[0];
+        float y = sensorEvent.values[1];
+        float z = sensorEvent.values[2];
+        float dif=0;
+       if(sensorControl){
+            lastx=x;
+            lasty=y;
+            lastz=z;
+            sensorControl=false;
+        }else {
+            dif=x+y+z-(lastx+lasty+lastz);
+            if(dif>SHAKE_LVL){
                 diceValue=getRandomNumber();
                 showDiceValue(diceValue);
+                mSensorManager.unregisterListener(this);
+                sensorControl=true;
+                availabre=true;
+                lastx=0;
+                lasty=0;
+                lastz=0;}
 
-            }
-        });
-        System.out.println("registro a onShake");
+
+        }
     }
-
+    private boolean availabre=true;
+    public void diceValue(View view){
+        if(availabre){
+            mSensorManager.registerListener(this, mAccelerometer,
+                    SensorManager.SENSOR_DELAY_NORMAL);
+        }
+        else{
+            mSensorManager.unregisterListener(this);
+        }
+        availabre=!availabre;
+    }
     public void showDiceValue(final int value){
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Agitaste tu cel!!");
@@ -174,16 +198,20 @@ public class GameActivity extends AppCompatActivity implements OnMapReadyCallbac
                 .setCancelable(false)
                 .setPositiveButton("OK", new DialogInterface.OnClickListener() {
 
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                setNextPosition(value);
-            }
-        });
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        currentPosition+=value;
+                        setNextPosition(currentPosition);
+
+                    }
+                });
         AlertDialog alertDialog = builder.create();
         alertDialog.show();
 
     }
 
+    @Override
+    public void onAccuracyChanged(Sensor sensor, int i) {
 
-
+    }
 }
