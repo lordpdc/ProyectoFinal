@@ -28,4 +28,14 @@
         android:onClick="downloadMaps"
         android:layout_below="@+id/botonJuegos" />
 
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Datos"
+        android:id="@+id/botonDatos"
+        android:onClick="readTxt"
+        android:layout_below="@+id/botonDescargar"
+        android:layout_alignLeft="@+id/botonDescargar"
+        android:layout_alignStart="@+id/botonDescargar" />
+
 </RelativeLayout>

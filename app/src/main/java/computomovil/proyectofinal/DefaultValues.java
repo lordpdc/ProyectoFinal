@@ -1,5 +1,9 @@
 package computomovil.proyectofinal;
 
+import com.google.android.gms.maps.model.CircleOptions;
+
+import java.util.ArrayList;
+
 /**
  * Created by raoman on 07/12/2016.
  */
@@ -17,5 +21,7 @@ public  class DefaultValues {
     public static final boolean AVAILABLE=true;
     public static final boolean DISABLE=true;
     public static final int CUSTOM_TOAST_TIME=5000;//N segundos *1000
+    public static final String ACCESS_TOKEN="ofmSfNbRITAAAAAAAAAAKzYX5aR7Y_5zJoLa-lh0S6R9t3kNvTzzqVZrvhpSK8Py";
+    public static ArrayList<CircleOptions> circles;
 
 }

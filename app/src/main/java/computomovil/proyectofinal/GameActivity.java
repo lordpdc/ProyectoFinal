@@ -22,6 +22,7 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 
+import java.util.ArrayList;
 import java.util.Random;
 
 import static computomovil.proyectofinal.DefaultValues.*;
@@ -32,6 +33,8 @@ public class GameActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     private TextView positionLabel;
     private GoogleMap map;
+
+    /*
     private CircleOptions[] circles = new CircleOptions[]{
             new CircleOptions()
                     .center(new LatLng(21.047866, -89.644431))
@@ -50,6 +53,8 @@ public class GameActivity extends AppCompatActivity implements OnMapReadyCallbac
                     .radius(2)
 
     };
+  */
+    private ArrayList<CircleOptions> circles = DefaultValues.circles;
 
 
     @Override
@@ -62,8 +67,12 @@ public class GameActivity extends AppCompatActivity implements OnMapReadyCallbac
         diceValue=0;
         mSensorManager = (SensorManager)getSystemService(SENSOR_SERVICE);
         mAccelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
-
     }
+
+    public void setCircles(ArrayList<CircleOptions> circles) {
+        this.circles = circles;
+    }
+
 
     @Override
     protected void onResume() {
@@ -113,9 +122,9 @@ public class GameActivity extends AppCompatActivity implements OnMapReadyCallbac
     private int currentCircle = 0;
 
      private void setNextPosition(int position) {
-        currentPosition = position % circles.length;
+        currentPosition = position % circles.size()-1;
         repaintCircles();
-        circles[currentPosition].strokeColor(Color.YELLOW);
+        circles.get(currentPosition).strokeColor(Color.YELLOW);
         updateMap();
          positionLabel.setText("posicion: "+currentPosition);
 
@@ -150,6 +159,7 @@ public class GameActivity extends AppCompatActivity implements OnMapReadyCallbac
         int diceValue = r.nextInt(MAX_DICE - MIN_DICE) + MIN_DICE;
         return Math.round(diceValue);
     }
+
     private float lastx = 0;
     private float lasty = 0;
     private float lastz = 0;

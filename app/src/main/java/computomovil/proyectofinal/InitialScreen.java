@@ -6,6 +6,7 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -15,18 +16,35 @@ import android.widget.Toast;
 import com.dropbox.core.v2.DbxClientV2;
 import com.dropbox.core.v2.files.ListFolderResult;
 import com.dropbox.core.v2.users.FullAccount;
+import com.google.android.gms.maps.model.CircleOptions;
+import com.google.android.gms.maps.model.LatLng;
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.ArrayList;
+
+import static computomovil.proyectofinal.DefaultValues.ACCESS_TOKEN;
+import static computomovil.proyectofinal.DefaultValues.circles;
 
 public class InitialScreen extends AppCompatActivity {
 
-    public static final String ACCESS_TOKEN="ofmSfNbRITAAAAAAAAAAKzYX5aR7Y_5zJoLa-lh0S6R9t3kNvTzzqVZrvhpSK8Py";
+    //public static final String ACCESS_TOKEN="ofmSfNbRITAAAAAAAAAAKzYX5aR7Y_5zJoLa-lh0S6R9t3kNvTzzqVZrvhpSK8Py";
     private DbxClientV2 client;
     private String email="",name="",tipe="",files="";
+    private ArrayList<CircleOptions> circlesA = new ArrayList<>();
+    ArrayList<String> valores = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_initial__screen);
         client= DropboxClient.getClient(ACCESS_TOKEN);
+        //generateCircles(21.047866, -89.644431);
+        //generateCircles(21.047892, -89.644479);
+        //generateCircles(21.047912, -89.644499);
+        //generateCircles(21.047842, -89.644419);
     }
 
     @Override
@@ -36,6 +54,7 @@ public class InitialScreen extends AppCompatActivity {
     }
 
     public void launchMap(View view) {
+        DefaultValues.circles = circlesA;
         Intent intent = new Intent(this,GameActivity.class);
         startActivity(intent);
     }
@@ -57,6 +76,28 @@ public class InitialScreen extends AppCompatActivity {
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    public void readTxt(View view){
+        File sdcard = Environment.getExternalStorageDirectory();
+
+        File file = new File(sdcard+"/BlueBox","mapaA.txt");
+
+        StringBuilder text = new StringBuilder();
+
+        try {
+            BufferedReader br = new BufferedReader(new FileReader(file));
+            String line;
+
+            while ((line = br.readLine()) != null) {
+                String[] coordinates = line.split(",");
+                generateCircles(Double.valueOf(coordinates[0]),Double.valueOf(coordinates[1]));
+            }
+            br.close();
+            Toast.makeText(this,text,Toast.LENGTH_SHORT).show();
+        }
+        catch (IOException e) {
+        }
     }
 
     private void getAccountDetail() {
@@ -91,5 +132,12 @@ public class InitialScreen extends AppCompatActivity {
             //((TextView)findViewById(R.id.accountDetail)).setText(infoAccount);
 
         }
+    }
+
+    public void generateCircles(double lat, double lon){
+        CircleOptions circle = new CircleOptions();
+        circle.center(new LatLng(lat, lon));
+        circle.radius(2);
+        circlesA.add(circle);
     }
 }
