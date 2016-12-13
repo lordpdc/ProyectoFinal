@@ -55,6 +55,7 @@ public class InitialScreen extends AppCompatActivity {
 
     public void launchMap(View view) {
         DefaultValues.circles = circlesA;
+        readTxt();
         Intent intent = new Intent(this,GameActivity.class);
         startActivity(intent);
     }
@@ -78,7 +79,7 @@ public class InitialScreen extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    public void readTxt(View view){
+    public void readTxt(){
         File sdcard = Environment.getExternalStorageDirectory();
 
         File file = new File(sdcard+"/BlueBox","mapaA.txt");
@@ -94,7 +95,6 @@ public class InitialScreen extends AppCompatActivity {
                 generateCircles(Double.valueOf(coordinates[0]),Double.valueOf(coordinates[1]));
             }
             br.close();
-            Toast.makeText(this,text,Toast.LENGTH_SHORT).show();
         }
         catch (IOException e) {
         }
@@ -128,7 +128,8 @@ public class InitialScreen extends AppCompatActivity {
         if(client!=null){
             getAccountDetail();
             infoAccount= email+"\n"+name+"\n"+tipe+"\n"+files;
-            Toast.makeText(this,infoAccount,Toast.LENGTH_LONG);
+            Toast.makeText(this,"Mapa Descargado",Toast.LENGTH_SHORT).show();
+            //Toast.makeText(this,infoAccount,Toast.LENGTH_LONG);
             //((TextView)findViewById(R.id.accountDetail)).setText(infoAccount);
 
         }

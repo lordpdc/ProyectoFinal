@@ -13,29 +13,22 @@
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Juego"
+        android:text="Iniciar Juego"
         android:id="@+id/botonJuegos"
         android:layout_centerVertical="true"
         android:layout_centerHorizontal="true"
         android:onClick="launchMap"/>
 
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Mapas"
-        android:id="@+id/botonDescargar"
-        android:layout_centerHorizontal="true"
-        android:onClick="downloadMaps"
-        android:layout_below="@+id/botonJuegos" />
 
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Datos"
-        android:id="@+id/botonDatos"
-        android:onClick="readTxt"
-        android:layout_below="@+id/botonDescargar"
-        android:layout_alignLeft="@+id/botonDescargar"
-        android:layout_alignStart="@+id/botonDescargar" />
+        android:text="Obtener Mapa"
+        android:id="@+id/botonDescargar"
+        android:onClick="downloadMaps"
+        android:layout_above="@+id/botonJuegos"
+        android:layout_alignLeft="@+id/botonJuegos"
+        android:layout_alignStart="@+id/botonJuegos"
+        android:layout_marginBottom="25dp" />
 
 </RelativeLayout>
