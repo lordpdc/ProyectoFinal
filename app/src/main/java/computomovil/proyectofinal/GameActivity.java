@@ -226,7 +226,7 @@ public class GameActivity extends AppCompatActivity implements OnMapReadyCallbac
 
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        currentPosition+=value;
+                        currentPosition+=value+1;
                         setNextPosition(currentPosition);
 
                     }
