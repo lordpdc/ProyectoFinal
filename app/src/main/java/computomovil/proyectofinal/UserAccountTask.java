@@ -34,7 +34,8 @@ public class UserAccountTask extends AsyncTask<Void,Void,FullAccount> {
 
     private String nameFile="mapaA.txt";
     private String pathLowerFile="/mapaA.txt";
-    private String revFile="151c911a8";
+    private String revFile="351c911a8";
+    //private String revFile="151c911a8";
     @Override
     protected FullAccount doInBackground(Void... params) {
         try {
