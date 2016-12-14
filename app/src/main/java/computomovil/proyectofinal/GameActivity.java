@@ -1,13 +1,19 @@
 package computomovil.proyectofinal;
 
+import android.Manifest;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.location.Location;
+import android.location.LocationListener;
+import android.os.Looper;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -21,41 +27,27 @@ import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.util.ArrayList;
 import java.util.Random;
+import java.util.Timer;
+import java.util.TimerTask;
+
+import android.os.Handler;
 
 import static computomovil.proyectofinal.DefaultValues.*;
 
 public class GameActivity extends AppCompatActivity implements OnMapReadyCallback, SensorEventListener {
-    private  SensorManager mSensorManager;
-    private  Sensor mAccelerometer;
-
+    private SensorManager mSensorManager;
+    private Sensor mAccelerometer;
     private TextView positionLabel;
     private GoogleMap map;
-
-    /*
-    private CircleOptions[] circles = new CircleOptions[]{
-            new CircleOptions()
-                    .center(new LatLng(21.047866, -89.644431))
-                    .radius(2)
-            ,
-            new CircleOptions()
-                    .center(new LatLng(21.047892, -89.644479))
-                    .radius(2)
-            ,
-            new CircleOptions()
-                    .center(new LatLng(21.047912, -89.644499))
-                    .radius(2)
-            ,
-            new CircleOptions()
-                    .center(new LatLng(21.047842, -89.644419))
-                    .radius(2)
-
-    };
-  */
     private ArrayList<CircleOptions> circles = DefaultValues.circles;
-
+    GPSTracker gps;
+    MarkerOptions markerOptions;
+    Marker marker;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,9 +56,14 @@ public class GameActivity extends AppCompatActivity implements OnMapReadyCallbac
         positionLabel = (TextView) findViewById(R.id.positionLabel);
         MapFragment mapFragment = (MapFragment) getFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
-        diceValue=0;
-        mSensorManager = (SensorManager)getSystemService(SENSOR_SERVICE);
+        diceValue = 0;
+        mSensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
         mAccelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+        gps = new GPSTracker(this);
+        //timer();
+        //scheduleSendLocation();
+        //gps.showSettingsAlert();
+        //initTimer();
     }
 
     public void setCircles(ArrayList<CircleOptions> circles) {
@@ -100,7 +97,30 @@ public class GameActivity extends AppCompatActivity implements OnMapReadyCallbac
         map.getUiSettings().setZoomControlsEnabled(true);
         CameraUpdate camUpd = CameraUpdateFactory.newLatLngZoom(new LatLng(21.048192, -89.644379), 20);
         map.moveCamera(camUpd);
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return;
+        }
+        map.setMyLocationEnabled(true);
         updateMap();
+        if(gps.canGetLocation){
+            //double lat = gps.getLatitude();
+            //double lon = gps.getLongitude();
+            //marker = map.addMarker(new MarkerOptions().position(new LatLng(lat, lon)));
+            //marker.setTitle("Posicion");
+
+            //MarkerOptions markerOptions = new MarkerOptions();
+            //markerOptions.position(new LatLng(lat, lon));
+            //markerOptions.title("Posicion");
+            //Toast.makeText(getApplicationContext(),lat+""+lon,Toast.LENGTH_SHORT).show();
+            //map.addMarker(markerOptions);
+        }
     }
 
     public int getDiceValue() {
@@ -192,6 +212,7 @@ public class GameActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         }
     }
+
     private boolean availabre=true;
     public void diceValue(View view){
         if(availabre){
@@ -240,4 +261,45 @@ public class GameActivity extends AppCompatActivity implements OnMapReadyCallbac
     public void onAccuracyChanged(Sensor sensor, int i) {
 
     }
+
+    /*
+    Seccion de GPS
+     */
+
+    private final double FIVE_SECONDS = 300;
+    public void scheduleSendLocation() {
+        new Handler(Looper.getMainLooper()).post(new Runnable() { // Tried new Handler(Looper.myLopper()) also
+            @Override
+            public void run() {
+                if(gps.canGetLocation){
+                    double lat = gps.getLatitude();
+                    double lon = gps.getLongitude();
+                    marker.remove();
+                    marker = map.addMarker(new MarkerOptions().position(new LatLng(lat, lon)));
+                    marker.setTitle("Posicion");
+                    //markerOptions.position(new LatLng(lat, lon));
+                    //map.addMarker(markerOptions);
+                    Toast.makeText(getApplicationContext(),lat+""+lon,Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+    }
+
+    Handler handler = new Handler();
+    public void timer(){
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                if(gps.canGetLocation){
+                    double lat = gps.getLatitude();
+                    double lon = gps.getLongitude();
+                    marker.remove();
+                    marker = map.addMarker(new MarkerOptions().position(new LatLng(lat, lon)));
+                    marker.setTitle("Posicion");
+                    Toast.makeText(getApplicationContext(),lat+""+lon,Toast.LENGTH_SHORT).show();
+                }
+            }
+        }, 100);
+    }
+
 }

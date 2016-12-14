@@ -45,6 +45,10 @@ public class InitialScreen extends AppCompatActivity {
         //generateCircles(21.047892, -89.644479);
         //generateCircles(21.047912, -89.644499);
         //generateCircles(21.047842, -89.644419);
+        GPSTracker gps = new GPSTracker(this);
+        if(!gps.isGPSEnabled){
+            gps.showSettingsAlert();
+        }
     }
 
     @Override
